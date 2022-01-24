@@ -114,7 +114,11 @@ const startDraw = (img) => {
         if (ev.key === 'Delete' || ev.key === 'Backspace') {
             if (window.selectedFilter != '') {
                 const image = window.filters.find((filter) => filter.name() === window.selectedFilter);
-                if (image) image.destroy();
+                if (image) {
+                    image.destroy();
+                    window.selectedFilter = '';
+                    updateTransformer();
+                }                
             }
         }
     });
