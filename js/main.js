@@ -10,24 +10,41 @@ const btnUpload = document.querySelector('#uploadFile');
  * @param {Image} img
  */
 const startDraw = (img) => {
-    // first we need to create a stage
+    // Membuat stage
     const stage = new Konva.Stage({
         container: 'container', // id of container <div>
         width: 600,
-        height: (img.height / img.width) * 600,
+        height: (img.height / img.width) * 600, // atur tinggi container menyesuaikan dengan tinggi gambar
     });
+
     const container = stage.container();
 
-    // then create layer
+    // membuat layer
     const layer = new Konva.Layer();
 
-    // buat objek gambar
+    // buat objek gambar dari paramter img
     const image = new Konva.Image({
         image: img,
         width: stage.width(),
         height: stage.height(),
     });
 
+    image.cache();
+    image.filters([Konva.Filters.HSL, Konva.Filters.Brighten, Konva.Filters.Contrast]);
+
+    // slider
+    const sliders = ['hue', 'saturation', 'luminance', 'brightness', 'contrast'];
+    sliders.forEach(id => {
+        const slider = document.getElementById(id);
+        const update = () => {
+            image[id](parseFloat(slider.value));
+            document.querySelector('span.' + id + '-value').innerText = parseFloat(slider.value);
+        };
+        slider.addEventListener('change', update);
+        // update();
+    })
+
+    // update transformer
     const updateTransformer = () => {
         if (window.selectedFilter == '') {
             transformer.nodes([]);
@@ -43,8 +60,12 @@ const startDraw = (img) => {
 
     // transformer
     const transformer = new Konva.Transformer();
+
+    // tambahkan transformer ke dalam layer
     layer.add(transformer);
 
+    // deteksi klik pada transformer
+    // mengaktifkan transformer pada suatu gambar
     stage.on('mousedown', (ev) => {
         if (ev.target === ev.target.getStage()) {
             window.selectedFilter = '';
@@ -65,6 +86,7 @@ const startDraw = (img) => {
         updateTransformer();
     });
 
+    // pengaturan event untuk drag dan drop filter
     container.addEventListener('dragover', (ev) => ev.preventDefault());
     container.addEventListener('drop', (ev) => {
         ev.preventDefault();
@@ -86,8 +108,10 @@ const startDraw = (img) => {
             transformer.nodes([image]);
         });
     });
+
+    // hapus filter pada canvas
     document.addEventListener('keydown', (ev) => {
-        if (ev.key === 'Delete') {
+        if (ev.key === 'Delete' || ev.key === 'Backspace') {
             if (window.selectedFilter != '') {
                 const image = window.filters.find((filter) => filter.name() === window.selectedFilter);
                 if (image) image.destroy();
@@ -98,6 +122,7 @@ const startDraw = (img) => {
     // tambah layer ke stage
     stage.add(layer);
 
+    // fungsi download
     function downloadURI(uri, name) {
         var link = document.createElement('a');
         link.download = name;
@@ -108,14 +133,14 @@ const startDraw = (img) => {
         delete link;
       }
 
+    // deteksi klik pada tombol unduh
+    // ketika klik, jalankan fungsi download
     btnDownload.addEventListener('click', ev => {
         ev.preventDefault();
         const dataURL = stage.toDataURL({pixelRatio: 3});
         downloadURI(dataURL, `gambar_${Date.now()}.png`);
     });
 };
-
-
 
 // print filter
 const imageFilters = ['kacamata1.png', 'janggut.png', 'bw_cat.png', 'cat.png', 'dog.png', 'face1.png', 'rabbit.png'];
@@ -128,6 +153,7 @@ document.querySelector('#filters').innerHTML = (() => {
     return html;
 })();
 
+// aktifkan event drag dan drop pada filter
 document.querySelectorAll('#filters img').forEach((img) => {
     img.addEventListener('dragstart', (ev) => {
         console.log(ev.target);
@@ -135,20 +161,30 @@ document.querySelectorAll('#filters img').forEach((img) => {
     });
 });
 
+// event untuk unggah gambar
 btnUpload.addEventListener('click', (ev) => {
     ev.preventDefault();
+    // buka field input type file
     fieldImage.click();
 });
 
+// event ketika pengguna mengunggah gambar
 fieldImage.addEventListener('change', (ev) => {
     if (ev.target.files.length > 0) {
         const url = URL.createObjectURL(ev.target.files[0]);
         const img = new Image();
         img.src = url;
         img.onload = function () {
+            // jalankan canvas
             startDraw(this);
+
+            // visible-kan canvas
             document.querySelector('#container').removeAttribute('class');
+
+            // sembunyikan tombol unggah
             btnUpload.classList.add('hidden');
+
+            // tampilkan tombol unduh
             btnDownload.parentNode.classList.remove('hidden');
         };
     }
