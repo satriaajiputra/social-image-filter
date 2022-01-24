@@ -14,7 +14,7 @@ const startDraw = (img) => {
     const stage = new Konva.Stage({
         container: 'container', // id of container <div>
         width: 600,
-        height: 335,
+        height: (img.height / img.width) * 600,
     });
     const container = stage.container();
 
@@ -25,7 +25,7 @@ const startDraw = (img) => {
     const image = new Konva.Image({
         image: img,
         width: stage.width(),
-        height: (img.height / img.width) * stage.width(),
+        height: stage.height(),
     });
 
     const updateTransformer = () => {
