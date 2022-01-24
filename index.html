@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Aplikasi Filter Gambar</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script>
+            tailwind.config = {};
+        </script>
+    </head>
+    <body class="bg-gray-200">
+        <div class="max-w-screen-xl mx-auto my-8">
+            <h1 class="font-bold text-center text-4xl leading-normal mb-8 text-gray-700">Aplikasi Filter Gambar</h1>
+            <div class="flex">
+                <div class="w-8/12 bg-white rounded-md shadow-md px-4 py-8 flex flex-wrap items-center justify-center" style="">
+                    <input type="file" name="image" class="hidden" accept="image/*" />
+                    <div id="container"></div>
+                    <div>
+                        <button id="uploadFile" class="bg-blue-700 rounded-md h-16 px-8 flex items-center justify-center text-white font-semibold text-lg">Unggah Gambar</button>
+                    </div>
+                    <div class="w-full hidden">
+                        <button id="download" class="bg-blue-700 rounded-md h-12 px-8 mx-auto flex items-center justify-center text-white font-semibold text-lg">Unduh Gambar</button>
+                    </div>
+                </div>
+                <div class="w-4/12 bg-white rounded-md shadow-md py-4 px-5 ml-8">
+                    <h2 class="font-bold text-lg mb-4 text-gray-700">Daftar Filter</h2>
+                    <div id="filters" class="grid gap-4 grid-cols-2 overflow-y-auto" style="max-height: 400px"></div>
+                </div>
+            </div>
+        </div>
+        <script src="lib/konva.min.js"></script>
+        <script src="js/main.js"></script>
+    </body>
+</html>
