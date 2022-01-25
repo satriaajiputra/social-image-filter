@@ -4,12 +4,17 @@ window.selectedFilter = '';
 const fieldImage = document.querySelector('[name="image"]');
 const btnDownload = document.querySelector('#download');
 const btnUpload = document.querySelector('#uploadFile');
+const btnDelete = document.querySelector('#delete');
 
 /**
  *
  * @param {Image} img
  */
 const startDraw = (img) => {
+    const pixelRatio = img.width / 600;
+
+    Konva.pixelRatio = pixelRatio;
+
     // Membuat stage
     const stage = new Konva.Stage({
         container: 'container', // id of container <div>
@@ -31,7 +36,7 @@ const startDraw = (img) => {
 
     image.cache();
     image.filters([Konva.Filters.HSL, Konva.Filters.Brighten, Konva.Filters.Contrast]);
-
+    
     // slider
     const sliders = ['hue', 'saturation', 'luminance', 'brightness', 'contrast'];
     sliders.forEach(id => {
@@ -40,7 +45,7 @@ const startDraw = (img) => {
             image[id](parseFloat(slider.value));
             document.querySelector('span.' + id + '-value').innerText = parseFloat(slider.value);
         };
-        slider.addEventListener('change', update);
+        slider.addEventListener('input', update);
         // update();
     })
 
@@ -141,8 +146,24 @@ const startDraw = (img) => {
     // ketika klik, jalankan fungsi download
     btnDownload.addEventListener('click', ev => {
         ev.preventDefault();
-        const dataURL = stage.toDataURL({pixelRatio: 3});
+        const dataURL = stage.toDataURL({pixelRatio: pixelRatio});
         downloadURI(dataURL, `gambar_${Date.now()}.png`);
+    });
+
+    btnDelete.addEventListener('click', ev => {
+        ev.preventDefault();
+        
+        if(confirm('Yakin akan menghapus gambar?')) {
+            stage.destroy();
+            // hide canvas
+            document.querySelector('#container').classList.add('hidden');
+
+            // tampilkan tombol unggah
+            btnUpload.classList.remove('hidden');
+
+            // sembunyikan tombol unduh
+            btnDownload.parentNode.classList.add('hidden');
+        }
     });
 };
 
@@ -190,6 +211,8 @@ fieldImage.addEventListener('change', (ev) => {
 
             // tampilkan tombol unduh
             btnDownload.parentNode.classList.remove('hidden');
+
+            ev.target.value = '';
         };
     }
 });
