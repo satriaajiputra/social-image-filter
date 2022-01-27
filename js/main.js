@@ -144,13 +144,13 @@ const startDraw = (img) => {
 
     // deteksi klik pada tombol unduh
     // ketika klik, jalankan fungsi download
-    btnDownload.addEventListener('click', ev => {
+    const eventDownload = (ev) => {
         ev.preventDefault();
         const dataURL = stage.toDataURL({pixelRatio: pixelRatio});
         downloadURI(dataURL, `gambar_${Date.now()}.png`);
-    });
+    }
 
-    btnDelete.addEventListener('click', ev => {
+    const eventDelete = (ev) => {
         ev.preventDefault();
         
         if(confirm('Yakin akan menghapus gambar?')) {
@@ -163,8 +163,15 @@ const startDraw = (img) => {
 
             // sembunyikan tombol unduh
             btnDownload.parentNode.classList.add('hidden');
+
+            btnDelete.removeEventListener('click', eventDelete);
+            btnDownload.removeEventListener('click', eventDownload);
         }
-    });
+    }
+
+    btnDownload.addEventListener('click', eventDownload);
+
+    btnDelete.addEventListener('click', eventDelete);
 };
 
 // print filter
